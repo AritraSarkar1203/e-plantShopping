@@ -252,6 +252,23 @@ function ProductList({ onHomeClick }) {
         e.preventDefault();
         setShowCart(false);
     };
+
+    
+    const addToCart = (plant) => {
+        if (!cart.includes(plant.id)) {
+          setCart([...cart, plant.id]);
+        }
+      };
+    
+      // Categorize plants
+      const categorizedPlants = {};
+      plantArray.forEach((plant) => {
+        if (!categorizedPlants[plant.category]) {
+          categorizedPlants[plant.category] = [];
+        }
+        categorizedPlants[plant.category].push(plant);
+      });
+
     return (
         <div>
             <div className="navbar" style={styleObj}>
@@ -273,10 +290,29 @@ function ProductList({ onHomeClick }) {
                 </div>
             </div>
             {!showCart ? (
-                <div className="product-grid">
-
-
-                </div>
+                 <div className="product-grid">                
+                    {Object.keys(categorizedPlants).map((category) => (
+                    <div key={category} className="category-section">
+                        <h2 className="category-title">{category}</h2>
+                        <div className="product-list">
+                        {categorizedPlants[category].map((plant) => (
+                            <div key={plant.id} className="product-card">
+                            <img src={plant.image} alt={plant.name} className="product-image" />
+                            <h3 className="product-title">{plant.name}</h3>
+                            <p className="product-price">${plant.price}</p>
+                            <button
+                                className={`product-button ${cart.includes(plant.id) ? "added-to-cart" : ""}`}
+                                onClick={() => addToCart(plant)}
+                                disabled={cart.includes(plant.id)}
+                            >
+                                {cart.includes(plant.id) ? "Added to Cart" : "Add to Cart"}
+                            </button>
+                            </div>
+                        ))}
+                        </div>
+                  </div>
+                ))}
+              </div>
             ) : (
                 <CartItem onContinueShopping={handleContinueShopping} />
             )}
